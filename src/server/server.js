@@ -34,12 +34,14 @@ const InputError = require('../exceptions/InputError');
             return newResponse;
         }
 
-        if (response.isBoom) {
+        if (response instanceof InputError || response.isBoom) {
+            const statusCode = response instanceof InputError ? response.statusCode : response.output.statusCode;
             const newResponse = h.response({
                 status: 'fail',
-                message: response.message
-            })
-            newResponse.code(response.output.statusCode)
+                message: 'Terjadi kesalahan dalam melakukan prediksi',
+            });
+
+            newResponse.code(parseInt(statusCode));
             return newResponse;
         }
 
