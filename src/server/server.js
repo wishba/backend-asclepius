@@ -24,12 +24,13 @@ const InputError = require('../exceptions/InputError');
     server.ext('onPreResponse', function (request, h) {
         const response = request.response;
 
-        if (response instanceof InputError) {
+        if (response.isBoom && response.output.statusCode === 413) {
             const newResponse = h.response({
                 status: 'fail',
-                message: `${response.message} Silakan gunakan foto lain.`
-            })
-            newResponse.code(response.statusCode)
+                message: 'Payload content length greater than maximum allowed: 1000000',
+            });
+
+            newResponse.code(413);
             return newResponse;
         }
 
